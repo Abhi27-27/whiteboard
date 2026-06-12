@@ -1,23 +1,55 @@
 .container {
-  @apply absolute top-1/2 left-5 text-sm border border-gray-400;
+  position: absolute;
+  top: 50%;
+  left: 16px;
   transform: translateY(-50%);
-  box-shadow: 1px 0 10px rgba(0, 0, 0, 0.2);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  min-width: 200px;
+  z-index: 100;
 }
 
 .selectOptionContainer {
-  @apply mb-6 last:mb-0 first:pt-5 last:pb-5 px-4;
+  padding: 16px 18px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.selectOptionContainer:last-child {
+  border-bottom: none;
 }
 
 .toolBoxLabel {
-  @apply block mb-1;
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #94a3b8;
+  margin-bottom: 10px;
 }
 
 .colorsContainer {
-  @apply flex flex-wrap items-center;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
 }
 
 .colorBox {
-  @apply inline-block w-5 h-5 rounded mr-1 last:mr-0;
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s;
+}
+
+.colorBox:hover {
+  transform: scale(1.15);
 }
 
 .noFillColorBox {
@@ -25,7 +57,7 @@
       to top left,
       rgba(255, 0, 0, 0) 0%,
       rgba(255, 0, 0, 0) calc(50% - 0.8px),
-      rgba(255, 0, 0, 1) 50%,
+      rgba(239, 68, 68, 1) 50%,
       rgba(255, 0, 0, 0) calc(50% + 0.8px),
       rgba(255, 0, 0, 0) 100%
     ),
@@ -33,17 +65,61 @@
       to top right,
       rgba(255, 0, 0, 0) 0%,
       rgba(255, 0, 0, 0) calc(50% - 0.8px),
-      rgba(255, 0, 0, 1) 50%,
+      rgba(239, 68, 68, 1) 50%,
       rgba(255, 0, 0, 0) calc(50% + 0.8px),
       rgba(255, 0, 0, 0) 100%
     );
+  background-color: #f8fafc;
 }
 
 .activeColorBox {
-  @apply border border-gray-300;
-  box-shadow: 0 0 0 1px #4a47b1;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.3);
+  transform: scale(1.1);
 }
 
 .colorPicker {
-  @apply mr-5 w-10 h-10 rounded border-2 border-neutral-400;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 2px solid #e2e8f0;
+  cursor: pointer;
+  padding: 0;
+  overflow: hidden;
+}
+
+.colorPicker::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.colorPicker::-webkit-color-swatch {
+  border: none;
+  border-radius: 6px;
+}
+
+.container input[type="range"] {
+  width: 100%;
+  height: 6px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: #e2e8f0;
+  border-radius: 3px;
+  outline: none;
+  cursor: pointer;
+}
+
+.container input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.4);
+  transition: transform 0.15s;
+}
+
+.container input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
 }

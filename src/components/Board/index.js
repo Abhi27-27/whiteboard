@@ -4,20 +4,15 @@ import boardContext from "../../store/board-context";
 import { TOOL_ACTION_TYPES, TOOL_ITEMS } from "../../constants";
 import toolboxContext from "../../store/toolbox-context";
 import socket from "../../utils/socket";
-
 import classes from "./index.module.css";
-
-import {
-  getSvgPathFromStroke,
-} from "../../utils/element";
+import { getSvgPathFromStroke } from "../../utils/element";
 import getStroke from "perfect-freehand";
 import axios from "axios";
-
+import { FaLock } from "react-icons/fa";
 
 function Board({ id }) {
   const canvasRef = useRef();
   const textAreaRef = useRef();
-  console.log(id)
 
   const {
     elements,
@@ -30,32 +25,27 @@ function Board({ id }) {
     redo,
     setCanvasId,
     setElements,
-    setHistory
+    setHistory,
   } = useContext(boardContext);
   const { toolboxState } = useContext(toolboxContext);
 
   const token = localStorage.getItem("whiteboard_user_token");
-
   const [isAuthorized, setIsAuthorized] = useState(true);
 
   useEffect(() => {
     if (id) {
-      // Join the canvas room (no need for userId)
       socket.emit("joinCanvas", { canvasId: id });
 
-      // Listen for updates from other users
       socket.on("receiveDrawingUpdate", (updatedElements) => {
         setElements(updatedElements);
       });
 
-      // Load initial canvas data
       socket.on("loadCanvas", (initialElements) => {
         setElements(initialElements);
       });
 
       socket.on("unauthorized", (data) => {
         console.log(data.message);
-        alert("Access Denied: You cannot edit this canvas.");
         setIsAuthorized(false);
       });
 
@@ -71,15 +61,17 @@ function Board({ id }) {
     const fetchCanvasData = async () => {
       if (id && token) {
         try {
-          const response = await axios.get(`https://api-whiteboard-az.onrender.com/api/canvas/load/${id}`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          setCanvasId(id); // Set the current canvas ID
-          setElements(response.data.elements); // Set the fetched elements
-          setHistory(response.data.elements); // Set the fetched elements
-        } catch (error) {
-          console.error("Error loading canvas:", error);
-        } finally {
+          const response = await axios.get(
+            `https://api-whiteboard-az.onrender.com/api/canvas/load/${id}`,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
+          setCanvasId(id);
+          setElements(response.data.elements);
+          setHistory(response.data.elements);
+        } catch (err) {
+          console.error("Error loading canvas:", err);
         }
       }
     };
@@ -103,10 +95,7 @@ function Board({ id }) {
     }
 
     document.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-    };
+    return () => document.removeEventListener("keydown", handleKeyDown);
   }, [undo, redo]);
 
   useLayoutEffect(() => {
@@ -126,7 +115,9 @@ function Board({ id }) {
           break;
         case TOOL_ITEMS.BRUSH:
           context.fillStyle = element.stroke;
-          const path = new Path2D(getSvgPathFromStroke(getStroke(element.points)));
+          const path = new Path2D(
+            getSvgPathFromStroke(getStroke(element.points))
+          );
           context.fill(path);
           context.restore();
           break;
@@ -147,7 +138,6 @@ function Board({ id }) {
     };
   }, [elements]);
 
-
   useEffect(() => {
     const textarea = textAreaRef.current;
     if (toolActionType === TOOL_ACTION_TYPES.WRITING) {
@@ -156,8 +146,6 @@ function Board({ id }) {
       }, 0);
     }
   }, [toolActionType]);
-
-  // console.log("Elements ",elements);
 
   const handleMouseDown = (event) => {
     if (!isAuthorized) return;
@@ -178,6 +166,15 @@ function Board({ id }) {
 
   return (
     <>
+      {!isAuthorized && (
+        <div className={classes.unauthorizedOverlay}>
+          <div className={classes.unauthorizedCard}>
+            <FaLock className={classes.lockIcon} />
+            <h3>View Only</h3>
+            <p>You don&apos;t have edit access to this canvas.</p>
+          </div>
+        </div>
+      )}
       {toolActionType === TOOL_ACTION_TYPES.WRITING && (
         <textarea
           type="text"
@@ -195,6 +192,7 @@ function Board({ id }) {
       <canvas
         ref={canvasRef}
         id="canvas"
+        className={!isAuthorized ? classes.readOnly : ""}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
