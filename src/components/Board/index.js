@@ -61,8 +61,9 @@ function Board({ id }) {
     const fetchCanvasData = async () => {
       if (id && token) {
         try {
+          // Changed hardcoded URL to use environment variable
           const response = await axios.get(
-            `https://api-whiteboard-az.onrender.com/api/canvas/load/${id}`,
+            `${process.env.REACT_APP_BACKEND_URL}/api/canvas/load/${id}`,
             {
               headers: { Authorization: `Bearer ${token}` },
             }

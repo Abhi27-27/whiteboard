@@ -17,8 +17,9 @@ const Login = () => {
     setLoading(true);
     setError("");
     try {
+      // Changed hardcoded URL to use environment variable
       const response = await fetch(
-        "https://api-whiteboard-az.onrender.com/api/users/login",
+        `${process.env.REACT_APP_BACKEND_URL}/api/users/login`,
         {
           method: "POST",
           headers: {

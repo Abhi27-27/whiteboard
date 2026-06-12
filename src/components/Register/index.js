@@ -27,7 +27,7 @@ const Register = () => {
     setError("");
     try {
       const response = await fetch(
-        "https://api-whiteboard-az.onrender.com/api/users/register",
+        `${process.env.REACT_APP_BACKEND_URL}/api/users/register`,
         {
           method: "POST",
           headers: {

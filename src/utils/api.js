@@ -1,7 +1,8 @@
 // utils/api.js
 import axios from "axios";
 
-const API_BASE_URL = "https://api-whiteboard-az.onrender.com/api/canvas"; 
+// Changed hardcoded URL to use environment variable
+const API_BASE_URL = `${process.env.REACT_APP_BACKEND_URL}/api/canvas`; 
 
 const token = localStorage.getItem('whiteboard_user_token')
 const canvasId = localStorage.getItem('canvas_id')
