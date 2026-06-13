@@ -32,8 +32,13 @@ const Login = () => {
       if (response.ok) {
         localStorage.setItem("whiteboard_user_token", data.token);
         setUserLoginStatus(true);
-        navigate("/");
-      } else {
+        
+        // REMOVE THIS: 
+        // navigate("/"); 
+        
+        // ADD THIS: Force a full page reload to reset the socket with the new token
+        window.location.href = "/"; 
+      }else {
         setError(data.message || "Login failed. Please check your credentials.");
       }
     } catch (err) {
