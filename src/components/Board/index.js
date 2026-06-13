@@ -5,7 +5,7 @@ import { TOOL_ACTION_TYPES, TOOL_ITEMS } from "../../constants";
 import toolboxContext from "../../store/toolbox-context";
 import socket from "../../utils/socket";
 import classes from "./index.module.css";
-import { getSvgPathFromStroke } from "../../utils/element";
+import { getSvgPathFromStroke, rehydrateElements } from "../../utils/element";
 import getStroke from "perfect-freehand";
 import axios from "axios";
 import { FaLock } from "react-icons/fa";
@@ -37,11 +37,13 @@ function Board({ id }) {
       socket.emit("joinCanvas", { canvasId: id });
 
       socket.on("receiveDrawingUpdate", (updatedElements) => {
-        setElements(updatedElements);
+        // Hydrate incoming socket data
+        setElements(rehydrateElements(updatedElements));
       });
 
       socket.on("loadCanvas", (initialElements) => {
-        setElements(initialElements);
+        // Hydrate initial canvas load via socket
+        setElements(rehydrateElements(initialElements));
       });
 
       socket.on("unauthorized", (data) => {
@@ -61,16 +63,19 @@ function Board({ id }) {
     const fetchCanvasData = async () => {
       if (id && token) {
         try {
-          // Changed hardcoded URL to use environment variable
           const response = await axios.get(
             `${process.env.REACT_APP_BACKEND_URL}/api/canvas/load/${id}`,
             {
               headers: { Authorization: `Bearer ${token}` },
             }
           );
+          
+          // Hydrate incoming database data
+          const hydratedElements = rehydrateElements(response.data.elements);
+          
           setCanvasId(id);
-          setElements(response.data.elements);
-          setHistory(response.data.elements);
+          setElements(hydratedElements);
+          setHistory(hydratedElements);
         } catch (err) {
           console.error("Error loading canvas:", err);
         }

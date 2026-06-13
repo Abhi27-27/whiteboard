@@ -151,3 +151,52 @@ export const getSvgPathFromStroke = (stroke) => {
   d.push("Z");
   return d.join(" ");
 };
+export const rehydrateElements = (elements) => {
+  if (!elements) return [];
+  
+  return elements.map((ele) => {
+    let options = {
+      seed: ele.id + 1,
+      fillStyle: "solid",
+    };
+    if (ele.stroke) options.stroke = ele.stroke;
+    if (ele.fill) options.fill = ele.fill;
+    if (ele.size) options.strokeWidth = ele.size;
+
+    switch (ele.type) {
+      case TOOL_ITEMS.LINE:
+        ele.roughEle = gen.line(ele.x1, ele.y1, ele.x2, ele.y2, options);
+        break;
+      case TOOL_ITEMS.RECTANGLE:
+        ele.roughEle = gen.rectangle(ele.x1, ele.y1, ele.x2 - ele.x1, ele.y2 - ele.y1, options);
+        break;
+      case TOOL_ITEMS.CIRCLE:
+        const cx = (ele.x1 + ele.x2) / 2;
+        const cy = (ele.y1 + ele.y2) / 2;
+        const width = ele.x2 - ele.x1;
+        const height = ele.y2 - ele.y1;
+        ele.roughEle = gen.ellipse(cx, cy, width, height, options);
+        break;
+      case TOOL_ITEMS.ARROW:
+        const { x3, y3, x4, y4 } = getArrowHeadsCoordinates(
+          ele.x1, ele.y1, ele.x2, ele.y2, ARROW_LENGTH
+        );
+        const points = [
+          [ele.x1, ele.y1],
+          [ele.x2, ele.y2],
+          [x3, y3],
+          [ele.x2, ele.y2],
+          [x4, y4],
+        ];
+        ele.roughEle = gen.linearPath(points, options);
+        break;
+      case TOOL_ITEMS.BRUSH:
+      case TOOL_ITEMS.TEXT:
+        // Brush and Text don't use roughEle, so they pass through as-is
+        break;
+      default:
+        break;
+    }
+    return ele;
+  });
+};
