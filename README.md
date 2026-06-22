@@ -1,70 +1,48 @@
-# Getting Started with Create React App
+# 🎨 Real-Time Whiteboard Application
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A collaborative, real-time whiteboard web application that allows users to draw, sketch, and brainstorm together seamlessly. 
 
-## Available Scripts
+🚀 **[Live Demo](https://whiteboard-alpha-pied.vercel.app)** | 🔗 **[Backend Repository](https://github.com/Abhi27-27/whiteboard-backend)**
 
-In the project directory, you can run:
+---
 
-### `npm start`
+## ✨ Features
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+* **Real-time Collaboration:** Draw on the canvas and see changes updated instantly for all connected users.
+* **Interactive Tools:** Includes a pen, eraser, and various stroke colors/sizes.
+* **Clear Canvas:** One-click clear functionality to start a new brainstorming session.
+* **Fast & Scalable:** Powered by a robust backend to handle multiple websocket connections efficiently.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## 🛠️ Tech Stack
 
-### `npm test`
+**Frontend:**
+* React.js / Next.js *(Update based on your actual stack)*
+* HTML5 Canvas API
+* CSS3 / Tailwind CSS
+* Socket.io-client
+* Deployed on **Vercel**
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+**Backend:**
+* Node.js
+* Express.js
+* Socket.io (for real-time WebSocket communication)
+* Deployed on ***Render**
 
-### `npm run build`
+## 🔗 Links & Resources
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+* **Live Application:** [https://whiteboard-alpha-pied.vercel.app](https://whiteboard-alpha-pied.vercel.app)
+* **Backend Source Code:** [https://github.com/Abhi27-27/whiteboard-backend](https://github.com/Abhi27-27/whiteboard-backend)
+* *(Optional: Add Frontend Source Code Link Here)*
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## 🚀 Getting Started (Local Development)
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Follow these instructions to set up the project locally on your machine.
 
-### `npm run eject`
+### Prerequisites
+* Node.js (v14 or higher)
+* npm or yarn
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+### 1. Backend Setup
+1. Clone the backend repository:
+   ```bash
+   git clone [https://github.com/Abhi27-27/whiteboard-backend.git](https://github.com/Abhi27-27/whiteboard-backend.git)
