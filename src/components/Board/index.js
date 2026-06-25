@@ -1,4 +1,10 @@
-import { useContext, useEffect, useLayoutEffect, useRef, useState } from "react";
+import {
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import rough from "roughjs";
 import boardContext from "../../store/board-context";
 import { TOOL_ACTION_TYPES, TOOL_ITEMS } from "../../constants";
@@ -13,6 +19,9 @@ import { FaLock } from "react-icons/fa";
 function Board({ id }) {
   const canvasRef = useRef();
   const textAreaRef = useRef();
+
+  const isRemoteUpdate = useRef(false);
+  const didMountRef = useRef(false);
 
   const {
     elements,
@@ -37,12 +46,12 @@ function Board({ id }) {
       socket.emit("joinCanvas", { canvasId: id });
 
       socket.on("receiveDrawingUpdate", (updatedElements) => {
-        // Hydrate incoming socket data
+        isRemoteUpdate.current = true;
         setElements(rehydrateElements(updatedElements));
       });
 
       socket.on("loadCanvas", (initialElements) => {
-        // Hydrate initial canvas load via socket
+        isRemoteUpdate.current = true;
         setElements(rehydrateElements(initialElements));
       });
 
@@ -57,7 +66,7 @@ function Board({ id }) {
         socket.off("unauthorized");
       };
     }
-  }, [id]);
+  }, [id, setElements]);
 
   useEffect(() => {
     const fetchCanvasData = async () => {
@@ -69,10 +78,10 @@ function Board({ id }) {
               headers: { Authorization: `Bearer ${token}` },
             }
           );
-          
-          // Hydrate incoming database data
+
           const hydratedElements = rehydrateElements(response.data.elements);
-          
+
+          isRemoteUpdate.current = true;
           setCanvasId(id);
           setElements(hydratedElements);
           setHistory(hydratedElements);
@@ -83,7 +92,20 @@ function Board({ id }) {
     };
 
     fetchCanvasData();
-  }, [id, token]);
+  }, [id, token, setCanvasId, setElements, setHistory]);
+
+  useEffect(() => {
+    if (!didMountRef.current) {
+      didMountRef.current = true;
+      return;
+    }
+    if (!id) return;
+    if (isRemoteUpdate.current) {
+      isRemoteUpdate.current = false;
+      return;
+    }
+    socket.emit("drawingUpdate", { canvasId: id, elements });
+  }, [elements, id]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -101,6 +123,7 @@ function Board({ id }) {
     }
 
     document.addEventListener("keydown", handleKeyDown);
+
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [undo, redo]);
 
@@ -161,13 +184,11 @@ function Board({ id }) {
   const handleMouseMove = (event) => {
     if (!isAuthorized) return;
     boardMouseMoveHandler(event);
-    socket.emit("drawingUpdate", { canvasId: id, elements });
   };
 
   const handleMouseUp = () => {
     if (!isAuthorized) return;
     boardMouseUpHandler();
-    socket.emit("drawingUpdate", { canvasId: id, elements });
   };
 
   return (
@@ -177,7 +198,7 @@ function Board({ id }) {
           <div className={classes.unauthorizedCard}>
             <FaLock className={classes.lockIcon} />
             <h3>View Only</h3>
-            <p>You don&apos;t have edit access to this canvas.</p>
+            <p>You don't have edit access to this canvas.</p>
           </div>
         </div>
       )}
