@@ -18,5 +18,4 @@ const boardContext = createContext({
   setHistory: () => {}
 });
 
-
 export default boardContext;

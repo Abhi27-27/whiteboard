@@ -20,7 +20,6 @@
   z-index: 0;
 }
 
-/* Nav */
 .nav {
   position: relative;
   z-index: 10;
@@ -102,7 +101,6 @@
   box-shadow: 0 6px 20px rgba(99, 102, 241, 0.45);
 }
 
-/* Hero */
 .hero {
   position: relative;
   z-index: 1;
@@ -204,7 +202,6 @@
   transform: translateY(-1px);
 }
 
-/* Hero Visual */
 .heroVisual {
   position: relative;
   animation: fadeUp 0.7s ease-out 0.15s both;
@@ -294,7 +291,6 @@
   animation-delay: 1.5s;
 }
 
-/* Features */
 .features {
   position: relative;
   z-index: 1;
@@ -359,7 +355,6 @@
   margin: 0;
 }
 
-/* Footer */
 .footer {
   position: relative;
   z-index: 1;

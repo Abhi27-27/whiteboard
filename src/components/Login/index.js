@@ -17,7 +17,7 @@ const Login = () => {
     setLoading(true);
     setError("");
     try {
-      // Changed hardcoded URL to use environment variable
+      
       const response = await fetch(
         `${process.env.REACT_APP_BACKEND_URL}/api/users/login`,
         {
@@ -33,10 +33,10 @@ const Login = () => {
         localStorage.setItem("whiteboard_user_token", data.token);
         setUserLoginStatus(true);
         
-        // REMOVE THIS: 
-        // navigate("/"); 
         
-        // ADD THIS: Force a full page reload to reset the socket with the new token
+        
+        
+        
         window.location.href = "/"; 
       }else {
         setError(data.message || "Login failed. Please check your credentials.");

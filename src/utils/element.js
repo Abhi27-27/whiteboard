@@ -26,7 +26,7 @@ export const createElement = (
     size,
   };
   let options = {
-    seed: id + 1, // id can't be zero
+    seed: id + 1, 
     fillStyle: "solid",
   };
   if (stroke) {
@@ -192,7 +192,7 @@ export const rehydrateElements = (elements) => {
         break;
       case TOOL_ITEMS.BRUSH:
       case TOOL_ITEMS.TEXT:
-        // Brush and Text don't use roughEle, so they pass through as-is
+        
         break;
       default:
         break;
