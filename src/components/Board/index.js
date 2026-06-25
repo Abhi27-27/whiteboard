@@ -48,10 +48,17 @@ function Board({ id }) {
 
   // HTTP fetch: primary load path — works even when the socket is still
   // waking up the server (Render.com free tier cold starts).
+  // Also clears stale elements immediately on canvas switch so the user
+  // never sees a flash of the previous canvas while the new one loads.
   useEffect(() => {
     if (!id) return;
     const token = localStorage.getItem("whiteboard_user_token");
     if (!token) return;
+
+    // Wipe the canvas instantly before the fetch resolves.
+    // isRemoteUpdate=true prevents this blank-state from being emitted as a drawingUpdate.
+    isRemoteUpdate.current = true;
+    setElements([]);
 
     axios
       .get(`${process.env.REACT_APP_BACKEND_URL}/api/canvas/load/${id}`, {
@@ -92,6 +99,10 @@ function Board({ id }) {
 
   useEffect(() => {
     if (!id) return;
+
+    // Reset so the drawingUpdate emission effect treats this canvas switch
+    // like a fresh mount and skips the first run (which still has stale elements).
+    didMountRef.current = false;
 
     const joinCanvas = () => {
       socket.emit("joinCanvas", { canvasId: id });
