@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import axios from "axios";
 import styles from "./index.module.css";
 import { useNavigate, useParams } from "react-router-dom";
 import boardContext from "../../store/board-context";
+import socket from "../../utils/socket";
 import {
   FaPlus,
   FaTrash,
@@ -36,6 +37,17 @@ const Sidebar = () => {
       fetchCanvases();
     }
   }, [isUserLoggedIn]);
+
+  const fetchCanvasesRef = useRef(fetchCanvases);
+  useEffect(() => {
+    fetchCanvasesRef.current = fetchCanvases;
+  });
+
+  useEffect(() => {
+    const handleCanvasShared = () => fetchCanvasesRef.current();
+    socket.on("canvasShared", handleCanvasShared);
+    return () => socket.off("canvasShared", handleCanvasShared);
+  }, []);
 
   const fetchCanvases = async () => {
     try {

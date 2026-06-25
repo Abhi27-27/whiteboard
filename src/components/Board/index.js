@@ -13,7 +13,6 @@ import socket from "../../utils/socket";
 import classes from "./index.module.css";
 import { getSvgPathFromStroke, rehydrateElements } from "../../utils/element";
 import getStroke from "perfect-freehand";
-import axios from "axios";
 import { FaLock } from "react-icons/fa";
 
 function Board({ id }) {
@@ -38,61 +37,47 @@ function Board({ id }) {
   } = useContext(boardContext);
   const { toolboxState } = useContext(toolboxContext);
 
-  const token = localStorage.getItem("whiteboard_user_token");
   const [isAuthorized, setIsAuthorized] = useState(true);
 
   useEffect(() => {
-    if (id) {
+    if (!id) return;
+
+    const joinCanvas = () => {
       socket.emit("joinCanvas", { canvasId: id });
-
-      socket.on("receiveDrawingUpdate", (updatedElements) => {
-        isRemoteUpdate.current = true;
-        setElements(rehydrateElements(updatedElements));
-      });
-
-      socket.on("loadCanvas", (initialElements) => {
-        isRemoteUpdate.current = true;
-        setElements(rehydrateElements(initialElements));
-      });
-
-      socket.on("unauthorized", (data) => {
-        console.log(data.message);
-        setIsAuthorized(false);
-      });
-
-      return () => {
-        socket.off("receiveDrawingUpdate");
-        socket.off("loadCanvas");
-        socket.off("unauthorized");
-      };
-    }
-  }, [id, setElements]);
-
-  useEffect(() => {
-    const fetchCanvasData = async () => {
-      if (id && token) {
-        try {
-          const response = await axios.get(
-            `${process.env.REACT_APP_BACKEND_URL}/api/canvas/load/${id}`,
-            {
-              headers: { Authorization: `Bearer ${token}` },
-            }
-          );
-
-          const hydratedElements = rehydrateElements(response.data.elements);
-
-          isRemoteUpdate.current = true;
-          setCanvasId(id);
-          setElements(hydratedElements);
-          setHistory(hydratedElements);
-        } catch (err) {
-          console.error("Error loading canvas:", err);
-        }
-      }
     };
 
-    fetchCanvasData();
-  }, [id, token, setCanvasId, setElements, setHistory]);
+    const handleLoadCanvas = (initialElements) => {
+      const hydrated = rehydrateElements(initialElements);
+      isRemoteUpdate.current = true;
+      setCanvasId(id);
+      setElements(hydrated);
+      setHistory(hydrated);
+    };
+
+    const handleReceiveDrawingUpdate = (updatedElements) => {
+      isRemoteUpdate.current = true;
+      setElements(rehydrateElements(updatedElements));
+    };
+
+    const handleUnauthorized = (data) => {
+      console.log(data.message);
+      setIsAuthorized(false);
+    };
+
+    joinCanvas();
+    socket.on("connect", joinCanvas);
+    socket.on("loadCanvas", handleLoadCanvas);
+    socket.on("receiveDrawingUpdate", handleReceiveDrawingUpdate);
+    socket.on("unauthorized", handleUnauthorized);
+
+    return () => {
+      socket.off("connect", joinCanvas);
+      socket.off("loadCanvas", handleLoadCanvas);
+      socket.off("receiveDrawingUpdate", handleReceiveDrawingUpdate);
+      socket.off("unauthorized", handleUnauthorized);
+      socket.emit("leaveCanvas", { canvasId: id });
+    };
+  }, [id, setElements, setCanvasId, setHistory]);
 
   useEffect(() => {
     if (!didMountRef.current) {

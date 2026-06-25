@@ -5,6 +5,7 @@ const BACKEND_URL = (
 ).replace(/\/+$/, "");
 
 const socket = io(BACKEND_URL, {
+  transports: ["websocket"],
   auth: (cb) => {
     const token = localStorage.getItem("whiteboard_user_token");
     cb({ token: token || "" });
