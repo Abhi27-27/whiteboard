@@ -1,4 +1,4 @@
-import React, { useCallback, useReducer, useEffect } from "react";
+import React, { useCallback, useReducer } from "react";
 import boardContext from "./board-context";
 import { BOARD_ACTIONS, TOOL_ACTION_TYPES, TOOL_ITEMS } from "../constants";
 import {
@@ -65,13 +65,10 @@ const boardReducer = (state, action) => {
             elements: newElements,
           };
         case TOOL_ITEMS.BRUSH:
-          newElements[index].points = [
-            ...newElements[index].points,
-            { x: clientX, y: clientY },
-          ];
-          // newElements[index].path = new Path2D(
-          //   getSvgPathFromStroke(getStroke(newElements[index].points))
-          // );
+          newElements[index] = {
+            ...newElements[index],
+            points: [...newElements[index].points, { x: clientX, y: clientY }],
+          };
           return {
             ...state,
             elements: newElements,
@@ -317,32 +314,26 @@ const BoardProvider = ({ children }) => {
     });
   }, []);
 
-  const setCanvasId = (canvasId) => {
+  const setCanvasId = useCallback((canvasId) => {
     dispatchBoardAction({
       type: BOARD_ACTIONS.SET_CANVAS_ID,
-      payload: {
-        canvasId,
-      },
+      payload: { canvasId },
     });
-  };
+  }, []);
 
-  const setElements = (elements) => {
+  const setElements = useCallback((elements) => {
     dispatchBoardAction({
       type: BOARD_ACTIONS.SET_CANVAS_ELEMENTS,
-      payload: {
-        elements,
-      },
+      payload: { elements },
     });
-  };
-    // console.log("hello canvas")
-  const setHistory = (elements) => {
+  }, []);
+
+  const setHistory = useCallback((elements) => {
     dispatchBoardAction({
       type: BOARD_ACTIONS.SET_HISTORY,
-      payload: {
-        elements,
-      },
+      payload: { elements },
     });
-  };  
+  }, []);
 
   const setUserLoginStatus = (isUserLoggedIn) => {
     dispatchBoardAction({

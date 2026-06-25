@@ -130,11 +130,10 @@ function Board({ id }) {
   useLayoutEffect(() => {
     const canvas = canvasRef.current;
     const context = canvas.getContext("2d");
-    context.save();
-
     const roughCanvas = rough.canvas(canvas);
 
     elements.forEach((element) => {
+      context.save();
       switch (element.type) {
         case TOOL_ITEMS.LINE:
         case TOOL_ITEMS.RECTANGLE:
@@ -148,18 +147,17 @@ function Board({ id }) {
             getSvgPathFromStroke(getStroke(element.points))
           );
           context.fill(path);
-          context.restore();
           break;
         case TOOL_ITEMS.TEXT:
           context.textBaseline = "top";
           context.font = `${element.size}px Caveat`;
           context.fillStyle = element.stroke;
           context.fillText(element.text, element.x1, element.y1);
-          context.restore();
           break;
         default:
           throw new Error("Type not recognized");
       }
+      context.restore();
     });
 
     return () => {
