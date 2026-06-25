@@ -6,9 +6,11 @@ import {
   useState,
 } from "react";
 import rough from "roughjs";
+import { useNavigate } from "react-router-dom";
 import boardContext from "../../store/board-context";
 import { TOOL_ACTION_TYPES, TOOL_ITEMS } from "../../constants";
 import toolboxContext from "../../store/toolbox-context";
+import axios from "axios";
 import socket from "../../utils/socket";
 import classes from "./index.module.css";
 import { getSvgPathFromStroke, rehydrateElements } from "../../utils/element";
@@ -16,6 +18,7 @@ import getStroke from "perfect-freehand";
 import { FaLock } from "react-icons/fa";
 
 function Board({ id }) {
+  const navigate = useNavigate();
   const canvasRef = useRef();
   const textAreaRef = useRef();
 
@@ -38,6 +41,54 @@ function Board({ id }) {
   const { toolboxState } = useContext(toolboxContext);
 
   const [isAuthorized, setIsAuthorized] = useState(true);
+  const elementsRef = useRef(elements);
+  useEffect(() => {
+    elementsRef.current = elements;
+  });
+
+  // HTTP fetch: primary load path — works even when the socket is still
+  // waking up the server (Render.com free tier cold starts).
+  useEffect(() => {
+    if (!id) return;
+    const token = localStorage.getItem("whiteboard_user_token");
+    if (!token) return;
+
+    axios
+      .get(`${process.env.REACT_APP_BACKEND_URL}/api/canvas/load/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => {
+        const hydrated = rehydrateElements(res.data.elements);
+        isRemoteUpdate.current = true;
+        setCanvasId(id);
+        setElements(hydrated);
+        setHistory(hydrated);
+      })
+      .catch((err) => console.error("Error loading canvas:", err));
+  }, [id, setCanvasId, setElements, setHistory]);
+
+  // Save when the tab/window closes so no stroke is lost.
+  // fetch with keepalive:true outlives the page unload and supports auth headers.
+  useEffect(() => {
+    if (!id) return;
+
+    const handleBeforeUnload = () => {
+      const token = localStorage.getItem("whiteboard_user_token");
+      if (!token || !elementsRef.current.length) return;
+      fetch(`${process.env.REACT_APP_BACKEND_URL}/api/canvas/update`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ canvasId: id, elements: elementsRef.current }),
+        keepalive: true,
+      });
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [id]);
 
   useEffect(() => {
     if (!id) return;
@@ -64,20 +115,26 @@ function Board({ id }) {
       setIsAuthorized(false);
     };
 
+    const handleCanvasDeleted = () => {
+      navigate("/");
+    };
+
     joinCanvas();
     socket.on("connect", joinCanvas);
     socket.on("loadCanvas", handleLoadCanvas);
     socket.on("receiveDrawingUpdate", handleReceiveDrawingUpdate);
     socket.on("unauthorized", handleUnauthorized);
+    socket.on("canvasDeleted", handleCanvasDeleted);
 
     return () => {
       socket.off("connect", joinCanvas);
       socket.off("loadCanvas", handleLoadCanvas);
       socket.off("receiveDrawingUpdate", handleReceiveDrawingUpdate);
       socket.off("unauthorized", handleUnauthorized);
+      socket.off("canvasDeleted", handleCanvasDeleted);
       socket.emit("leaveCanvas", { canvasId: id });
     };
-  }, [id, setElements, setCanvasId, setHistory]);
+  }, [id, setElements, setCanvasId, setHistory, navigate]);
 
   useEffect(() => {
     if (!didMountRef.current) {
