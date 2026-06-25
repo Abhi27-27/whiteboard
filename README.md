@@ -1,70 +1,155 @@
-# Getting Started with Create React App
+# 🎨 SketchBoard — Real-Time Collaborative Whiteboard (Frontend)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+<div align="center">
 
-## Available Scripts
+![SketchBoard](https://img.shields.io/badge/SketchBoard-Whiteboard-6366f1?style=for-the-badge&logo=react&logoColor=white)
+![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react&logoColor=black)
+![Socket.io](https://img.shields.io/badge/Socket.io-4-010101?style=for-the-badge&logo=socket.io&logoColor=white)
+![RoughJS](https://img.shields.io/badge/RoughJS-Hand--drawn-f59e0b?style=for-the-badge)
 
-In the project directory, you can run:
+**Think visually. Create together. Draw in real time.**
 
-### `npm start`
+[🌐 Live Demo](https://whiteboard-alpha-pied.vercel.app/) · [⚙️ Backend Repo](https://github.com/Abhi27-27/whiteboard-backend) · [🐛 Report Bug](https://github.com/Abhi27-27/whiteboard/issues)
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+</div>
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+---
 
-### `npm test`
+## 📌 Overview
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+SketchBoard is a full-stack real-time collaborative whiteboard application. Users can draw, annotate, and collaborate live on shared canvases with multi-tool support, undo/redo, and cloud persistence. This repository contains the **React frontend**.
 
-### `npm run build`
+---
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## 🚀 Live Demo
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+> **Deployed on Vercel:** [https://whiteboard-alpha-pied.vercel.app/](https://whiteboard-alpha-pied.vercel.app/)
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+---
 
-### `npm run eject`
+## ✨ Features
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+- 🖌️ **Multi-Tool Drawing** — Brush, Line, Rectangle, Circle, Arrow, Text, and Eraser
+- 🤝 **Real-Time Collaboration** — Socket.io syncs drawings live across all connected users
+- 🔐 **JWT Authentication** — Secure login/register with token stored in localStorage
+- 🎨 **Stroke & Fill Colors** — Color picker + preset palette for stroke and fill customization
+- 📏 **Size Control** — Adjustable brush/stroke size and font size per tool
+- ↩️ **Undo / Redo** — Full history stack with Ctrl+Z / Ctrl+Y keyboard shortcuts
+- 💾 **Cloud Save** — Canvas elements auto-persisted to MongoDB on every drawing update
+- 📥 **Export Canvas** — Download the current board as a PNG image
+- 🔒 **View-Only Mode** — Unauthorized users see the canvas but cannot edit it
+- 📱 **Responsive Landing Page** — Animated hero with feature highlights
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+---
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## 🛠️ Tech Stack
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+| Category | Technology |
+|---|---|
+| Framework | React 18 (CRA) |
+| Styling | CSS Modules |
+| Drawing | RoughJS + Perfect Freehand |
+| Real-Time | Socket.io Client |
+| State Management | React Context API + useReducer |
+| HTTP | Axios + Fetch API |
+| Icons | React Icons |
+| Deployment | Vercel |
 
-## Learn More
+---
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## 📁 Project Structure
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+```
+src/
+├── components/
+│   ├── Board/              # Canvas element — drawing, rendering, socket sync
+│   ├── Toolbar/            # Top toolbar — tools, undo, redo, export
+│   ├── Toolbox/            # Side panel — stroke, fill, size controls
+│   ├── Sidebar/            # Canvas management sidebar
+│   ├── Landing/            # Public landing page (unauthenticated)
+│   ├── Login/              # Login form
+│   └── Register/           # Registration form
+├── store/
+│   ├── board-context.js    # Board context definition
+│   ├── BoardProvider.jsx   # Board state + reducer (elements, history, tools)
+│   ├── toolbox-context.js  # Toolbox context definition
+│   └── ToolboxProvider.jsx # Toolbox state (stroke, fill, size per tool)
+├── utils/
+│   ├── element.js          # createElement, isPointNearElement, rehydrateElements
+│   ├── math.js             # Geometry helpers (line distance, arrow heads, midpoint)
+│   ├── api.js              # Canvas REST API helpers (load, update)
+│   └── socket.js           # Socket.io client initialization with auth header
+├── constants/
+│   └── index.js            # TOOL_ITEMS, COLORS, BOARD_ACTIONS, TOOLBOX_ACTIONS
+└── App.jsx                 # Routes: /, /:id, /login, /register
+```
 
-### Code Splitting
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## ⚙️ Getting Started
 
-### Analyzing the Bundle Size
+### Prerequisites
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+- Node.js v16+
+- Backend server running (see [Backend Repo](https://github.com/Abhi27-27/whiteboard-backend))
 
-### Making a Progressive Web App
+### Installation
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+```bash
+# 1. Clone the repository
+git clone https://github.com/Abhi27-27/whiteboard.git
+cd whiteboard
 
-### Advanced Configuration
+# 2. Install dependencies
+npm install
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+# 3. Create environment file
+cp .env.example .env
+```
 
-### Deployment
+### Environment Variables
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+Create a `.env` file in the root:
 
-### `npm run build` fails to minify
+```env
+REACT_APP_BACKEND_URL=http://localhost:5000
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+> For production, set `REACT_APP_BACKEND_URL` to your deployed backend URL.
+
+### Run Locally
+
+```bash
+npm start
+```
+
+App runs at `http://localhost:3000`
+
+---
+
+## 🔌 Socket Events
+
+| Event | Direction | Description |
+|---|---|---|
+| `joinCanvas` | Client → Server | Join a canvas room by ID |
+| `loadCanvas` | Server → Client | Receive initial canvas elements |
+| `drawingUpdate` | Client → Server | Broadcast drawing changes |
+| `receiveDrawingUpdate` | Server → Client | Receive others' drawing changes |
+| `unauthorized` | Server → Client | Notify of access denial |
+
+---
+
+## 🔗 Backend
+
+This frontend connects to the SketchBoard REST API + WebSocket server.
+
+> **Backend Repository:** [https://github.com/Abhi27-27/whiteboard-backend](https://github.com/Abhi27-27/whiteboard-backend)
+
+Make sure the backend is running before starting the frontend locally.
+
+---
+
+
+<div align="center">
+Made by <a href="https://github.com/Abhi27-27">Marreddy Abhiram Muni Reddy</a> · IIT Kharagpur
+</div>
