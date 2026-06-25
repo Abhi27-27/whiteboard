@@ -38,7 +38,7 @@ const Sidebar = () => {
     }
   }, [isUserLoggedIn]);
 
-  const fetchCanvasesRef = useRef(fetchCanvases);
+  const fetchCanvasesRef = useRef(null);
   useEffect(() => {
     fetchCanvasesRef.current = fetchCanvases;
   });
