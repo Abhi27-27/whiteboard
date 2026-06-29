@@ -1,155 +1,105 @@
-# 🎨 SketchBoard — Real-Time Collaborative Whiteboard (Frontend)
+# Collaborative Whiteboard - Frontend
 
-<div align="center">
+A real-time whiteboard where several logged-in users can draw on the same board and
+see each other's strokes as they happen. It has the usual drawing tools, undo and
+redo, and saves automatically.
 
-![SketchBoard](https://img.shields.io/badge/SketchBoard-Whiteboard-6366f1?style=for-the-badge&logo=react&logoColor=white)
-![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react&logoColor=black)
-![Socket.io](https://img.shields.io/badge/Socket.io-4-010101?style=for-the-badge&logo=socket.io&logoColor=white)
-![RoughJS](https://img.shields.io/badge/RoughJS-Hand--drawn-f59e0b?style=for-the-badge)
+This is the frontend repo, built with React. It talks to a separate Node and Express
+backend.
 
-**Think visually. Create together. Draw in real time.**
+## Tech stack
 
-[🌐 Live Demo](https://whiteboard-alpha-pied.vercel.app/) · [⚙️ Backend Repo](https://github.com/Abhi27-27/whiteboard-backend) · [🐛 Report Bug](https://github.com/Abhi27-27/whiteboard/issues)
+- React (Create React App)
+- React Router for navigation
+- HTML Canvas for the drawing surface
+- RoughJS for the hand-drawn look of shapes
+- perfect-freehand for the brush
+- socket.io-client for the live connection
+- axios for REST calls
 
-</div>
+## Features
 
----
+- Seven tools: brush, line, rectangle, circle, arrow, eraser and text
+- Real-time drawing shared across everyone on the same board
+- Undo and redo with full history
+- Account sign up and login
+- Create boards, share them with specific users, and delete them
+- Boards save automatically
 
-## 📌 Overview
+## How it works
 
-SketchBoard is a full-stack real-time collaborative whiteboard application. Users can draw, annotate, and collaborate live on shared canvases with multi-tool support, undo/redo, and cloud persistence. This repository contains the **React frontend**.
+The drawing is kept as a list of elements in React state. Anything you draw adds to
+or updates that list, and the canvas is redrawn from the list. When the list changes
+because of your own drawing, it is sent over the socket to the server, which shares
+it with the other users on the board.
 
----
+```
+you draw -> the element list updates -> sent over the socket -> other users' boards update
+```
 
-## 🚀 Live Demo
+One important detail: when an update arrives from another user, the app shows it but
+does not send it back out. Without this guard the same update would bounce between
+users in a loop. A small flag marks remote updates so they are rendered but not
+re-broadcast.
 
-> **Deployed on Vercel:** [https://whiteboard-alpha-pied.vercel.app/](https://whiteboard-alpha-pied.vercel.app/)
+State is managed with React Context and a reducer, which keeps all the changes (tool
+changes, drawing, undo, redo and so on) in one predictable place.
 
----
-
-## ✨ Features
-
-- 🖌️ **Multi-Tool Drawing** — Brush, Line, Rectangle, Circle, Arrow, Text, and Eraser
-- 🤝 **Real-Time Collaboration** — Socket.io syncs drawings live across all connected users
-- 🔐 **JWT Authentication** — Secure login/register with token stored in localStorage
-- 🎨 **Stroke & Fill Colors** — Color picker + preset palette for stroke and fill customization
-- 📏 **Size Control** — Adjustable brush/stroke size and font size per tool
-- ↩️ **Undo / Redo** — Full history stack with Ctrl+Z / Ctrl+Y keyboard shortcuts
-- 💾 **Cloud Save** — Canvas elements auto-persisted to MongoDB on every drawing update
-- 📥 **Export Canvas** — Download the current board as a PNG image
-- 🔒 **View-Only Mode** — Unauthorized users see the canvas but cannot edit it
-- 📱 **Responsive Landing Page** — Animated hero with feature highlights
-
----
-
-## 🛠️ Tech Stack
-
-| Category | Technology |
-|---|---|
-| Framework | React 18 (CRA) |
-| Styling | CSS Modules |
-| Drawing | RoughJS + Perfect Freehand |
-| Real-Time | Socket.io Client |
-| State Management | React Context API + useReducer |
-| HTTP | Axios + Fetch API |
-| Icons | React Icons |
-| Deployment | Vercel |
-
----
-
-## 📁 Project Structure
+## Project structure
 
 ```
 src/
-├── components/
-│   ├── Board/              # Canvas element — drawing, rendering, socket sync
-│   ├── Toolbar/            # Top toolbar — tools, undo, redo, export
-│   ├── Toolbox/            # Side panel — stroke, fill, size controls
-│   ├── Sidebar/            # Canvas management sidebar
-│   ├── Landing/            # Public landing page (unauthenticated)
-│   ├── Login/              # Login form
-│   └── Register/           # Registration form
-├── store/
-│   ├── board-context.js    # Board context definition
-│   ├── BoardProvider.jsx   # Board state + reducer (elements, history, tools)
-│   ├── toolbox-context.js  # Toolbox context definition
-│   └── ToolboxProvider.jsx # Toolbox state (stroke, fill, size per tool)
-├── utils/
-│   ├── element.js          # createElement, isPointNearElement, rehydrateElements
-│   ├── math.js             # Geometry helpers (line distance, arrow heads, midpoint)
-│   ├── api.js              # Canvas REST API helpers (load, update)
-│   └── socket.js           # Socket.io client initialization with auth header
-├── constants/
-│   └── index.js            # TOOL_ITEMS, COLORS, BOARD_ACTIONS, TOOLBOX_ACTIONS
-└── App.jsx                 # Routes: /, /:id, /login, /register
+  App.js                     routing and layout
+  constants.js               the tool list and the reducer action types
+  store/
+    board-context.js         the board context
+    BoardProvider.js         the reducer and the drawing handlers, including undo/redo
+    toolbox-context.js       toolbox context (color, fill, size)
+    ToolboxProvider.js
+  components/
+    Board/                   the canvas, the socket wiring and the rendering
+    Toolbar/                 tool buttons, undo, redo, download
+    Toolbox/                 color, fill and size pickers
+    Sidebar/                 board list, create, share, delete
+    Login, Register, Landing
+  utils/
+    socket.js                creates the socket and attaches the token
+    element.js               builds and redraws shapes, eraser hit testing
+    math.js                  geometry helpers
+    api.js                   axios calls
 ```
 
----
-
-## ⚙️ Getting Started
+## Getting started
 
 ### Prerequisites
 
-- Node.js v16+
-- Backend server running (see [Backend Repo](https://github.com/Abhi27-27/whiteboard-backend))
+- Node.js 18 or newer
+- The backend running (locally or deployed)
 
-### Installation
+### Install and run
 
 ```bash
-# 1. Clone the repository
-git clone https://github.com/Abhi27-27/whiteboard.git
-cd whiteboard
-
-# 2. Install dependencies
 npm install
-
-# 3. Create environment file
-cp .env.example .env
+npm start
 ```
 
-### Environment Variables
+The app runs on http://localhost:3000.
 
-Create a `.env` file in the root:
+### Backend URL
+
+Set the backend URL the app should connect to (used for both the API and the socket).
+With Create React App this is an environment variable in a `.env` file:
 
 ```env
 REACT_APP_BACKEND_URL=http://localhost:5000
 ```
 
-> For production, set `REACT_APP_BACKEND_URL` to your deployed backend URL.
-
-### Run Locally
+## Build and deploy
 
 ```bash
-npm start
+npm run build
 ```
 
-App runs at `http://localhost:3000`
-
----
-
-## 🔌 Socket Events
-
-| Event | Direction | Description |
-|---|---|---|
-| `joinCanvas` | Client → Server | Join a canvas room by ID |
-| `loadCanvas` | Server → Client | Receive initial canvas elements |
-| `drawingUpdate` | Client → Server | Broadcast drawing changes |
-| `receiveDrawingUpdate` | Server → Client | Receive others' drawing changes |
-| `unauthorized` | Server → Client | Notify of access denial |
-
----
-
-## 🔗 Backend
-
-This frontend connects to the SketchBoard REST API + WebSocket server.
-
-> **Backend Repository:** [https://github.com/Abhi27-27/whiteboard-backend](https://github.com/Abhi27-27/whiteboard-backend)
-
-Make sure the backend is running before starting the frontend locally.
-
----
-
-
-<div align="center">
-Made by <a href="https://github.com/Abhi27-27">Marreddy Abhiram Muni Reddy</a> · IIT Kharagpur
-</div>
+This produces a static build that can be hosted on Vercel or Netlify. Point the
+backend URL at your deployed server, and make sure that server allows this site's URL
+in its CORS settings.
